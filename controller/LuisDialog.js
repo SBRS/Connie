@@ -51,7 +51,7 @@ exports.startDialog = function (bot) {
                 session.conversationData["phoneNumber"] = results.response;
             }
             session.send('Creating appointment... Please wait.');
-            appointment.createAppointment(session, session.userData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
+            appointment.createAppointment(session, session.conversationData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
             session.conversationData = {};
         }
     ]).triggerAction({

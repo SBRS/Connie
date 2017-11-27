@@ -1,6 +1,6 @@
 var request = require('request');
 
-exports.postAppointment = function SendData(url, session, username, enquiry, dateTime, phoneNumber){
+exports.postAppointment = function sendData(url, session, username, enquiry, dateTime, phoneNumber, callback){
     var options = {
         url: url,
         method: 'POST',
@@ -16,9 +16,10 @@ exports.postAppointment = function SendData(url, session, username, enquiry, dat
         }
       };
       
-      request(options, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
+      request(options, function handleSendData (error, response, body) {
+        if (!error && response.statusCode === 201) {
             console.log(body);
+            callback(body, session, username);
         }
         else{
             console.log(error);
