@@ -1,6 +1,6 @@
 var request = require('request');
 
-exports.postAppointment = function sendData(url, session, username, enquiry, dateTime, phoneNumber, id, callback){
+exports.postAppointment = function sendData(url, session, username, enquiry, dateTime, phoneNumber, appointmentId, callback){
     var options = {
         url: url,
         method: 'POST',
@@ -13,14 +13,13 @@ exports.postAppointment = function sendData(url, session, username, enquiry, dat
             'enquiry': enquiry,
             'dateTime': dateTime,
             'phoneNumber': phoneNumber,
-            'appointmentId': id
+            'appointmentId': appointmentId
         }
       };
       
       request(options, function handleSendData (error, response, body) {
         if (!error && response.statusCode === 201) {
-            console.log(body);
-            callback(body, session, username, id);
+            callback(body, session, username, appointmentId);
         }
         else{
             console.log(error);
@@ -33,10 +32,31 @@ exports.getAppointment = function getData(url, session, username, phoneNumber, c
         if(error){
             console.log(error);
         }else {
-            console.log(body);
             callback(body, session, username, phoneNumber);
         }
     });
+};
+
+exports.deleteAppointment = function deleteData(url,session, username ,phoneNumber, appointmentId, id, callback){
+    var options = {
+        url: url + "\\" + id,
+        method: 'DELETE',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        }
+    };
+
+    request(options,function (error, response, body){
+        if( !error && response.statusCode === 200){
+            console.log(body);
+            callback(body, session, username, appointmentId);
+        }else {
+            console.log(error);
+            console.log(response);
+        }
+    })
+
 };
 
 exports.getRate = function getData(url, session, convertFrom, convertTo, amount, callback){

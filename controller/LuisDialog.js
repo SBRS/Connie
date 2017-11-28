@@ -88,6 +88,46 @@ exports.startDialog = function (bot) {
         matches: 'retrieveAppointment'
     });
 
+    bot.dialog('deleteAppointment', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};
+            if (!session.userData["username"]) {
+                builder.Prompts.text(session, 'Please, provide your name to delete your appointment.');
+            } else {
+                next(); // Skip if already has this info.
+            }
+        },
+        function (session, results, next) {
+            if (results.response) {
+                session.userData["username"] = results.response;
+            }
+            if (!session.conversationData["phoneNumber"]) {
+                builder.Prompts.text(session, 'Please, provide your phone number.');
+            } else {
+                next();
+            }
+        },
+        function (session, results, next) {
+            if (results.response) {
+                session.conversationData["phoneNumber"] = results.response;
+            }
+            if (!session.conversationData["appointmentId"]) {
+                builder.Prompts.text(session, 'Please, provide your appointment ID.');
+            } else {
+                next();
+            }
+        },
+        function (session, results) {
+            if (results.response) {
+                session.conversationData["appointmentId"] = results.response;
+            }
+            session.send('Deleting your appointment... Please wait...');
+            appointment.deleteAppointment(session, session.userData["username"], session.conversationData["phoneNumber"], session.conversationData["appointmentId"]);
+        }
+    ]).triggerAction({
+        matches: 'deleteAppointment'
+    });
+
     bot.dialog('currencyConverter', [
         function (session, args) {
             session.dialogData.args = args || {};
