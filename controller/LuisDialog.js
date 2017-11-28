@@ -57,4 +57,20 @@ exports.startDialog = function (bot) {
     ]).triggerAction({
         matches: 'bookAppointment'
     });
+
+    bot.dialog('currencyConverter', function (session, args) {
+        // Pulls out the currencyFrom entity from the session if it exists
+        var currencyFromEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyFrom');
+        // Pulls out the currencyTo entity from the session if it exists
+        var currencyToEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyTo');
+
+        // Checks if the for entity was found
+        if (currencyFromEntity && currencyToEntity) {
+            session.send('convert %s to %s', currencyFromEntity.entity, currencyToEntity.entity);
+        } else {
+            session.send("No currency identified! Please try again");
+        }
+    }).triggerAction({
+        matches: 'currencyConverter'
+    });
 }
