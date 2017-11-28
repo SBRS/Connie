@@ -10,7 +10,7 @@ function handleDisplayCurrency(message, session, convertFrom, convertTo, amount)
     var displayCurrencyResponse = JSON.parse(message);
     var currencyRate = displayCurrencyResponse.rates[convertTo.toUpperCase()];
     var total = amount * currencyRate;
-    //Displays currency converter adaptive cards in chat box 
+    //Displays currency converter adaptive card in chat box 
     session.send(new builder.Message(session).addAttachment({
         contentType: "application/vnd.microsoft.card.adaptive",
         content: {

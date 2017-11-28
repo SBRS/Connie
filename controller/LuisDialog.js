@@ -12,9 +12,9 @@ exports.startDialog = function (bot) {
         function (session, args, next) {
             session.dialogData.args = args || {};
             if (!session.userData["username"]) {
-                builder.Prompts.text(session, "Please provide your name to book an appointment.");
+                builder.Prompts.text(session, 'Please, provide your name to book an appointment.');
             } else {
-                next(); // Skip if we already have this info.
+                next(); // Skip if already has this info.
             }
         },
         function (session, results, next) {
@@ -56,6 +56,36 @@ exports.startDialog = function (bot) {
         }
     ]).triggerAction({
         matches: 'bookAppointment'
+    });
+
+    bot.dialog('retrieveAppointment', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};
+            if (!session.userData["username"]) {
+                builder.Prompts.text(session, 'Please, provide your name to look for your appointments.');
+            } else {
+                next(); // Skip if already has this info.
+            }
+        },
+        function (session, results, next) {
+            if (results.response) {
+                session.userData["username"] = results.response;
+            }
+            if (!session.conversationData["phoneNumber"]) {
+                builder.Prompts.text(session, 'Please, provide your phone number to look for your appointments.');
+            } else {
+                next();
+            }
+        },
+        function (session, results) {
+            if (results.response) {
+                session.conversationData["phoneNumber"] = results.response;
+            }
+            session.send('Searching for your appointments... Please wait...');
+            appointment.retrieveAppointment(session, session.userData["username"], session.conversationData["phoneNumber"]);
+        }
+    ]).triggerAction({
+        matches: 'retrieveAppointment'
     });
 
     bot.dialog('currencyConverter', [
