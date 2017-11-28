@@ -18,7 +18,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("Hi! Connie here. How can I help you?");
+    session.send("Hey! Connie here. How can I help you?");
 });
 
 bot.on('conversationUpdate', function (message) {

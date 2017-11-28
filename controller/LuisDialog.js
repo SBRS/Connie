@@ -1,5 +1,6 @@
 var builder = require('botbuilder');
 var appointment = require('./Appointment');
+var converter = require('./CurrencyConverter');
 
 exports.startDialog = function (bot) {
 
@@ -16,9 +17,9 @@ exports.startDialog = function (bot) {
                 next(); // Skip if we already have this info.
             }
         },
-        function (session, results) {
+        function (session, results, next) {
             if (results.response) {
-                session.conversationData["username"] = results.response;
+                session.userData["username"] = results.response;
             }
             if (!session.conversationData["enquire"]) {
                 builder.Prompts.text(session, 'Please, provide purpose of your appointment (open account, open deposit, close deposit and etc.)');
@@ -26,7 +27,7 @@ exports.startDialog = function (bot) {
                 next();
             }
         },
-        function (session, results) {
+        function (session, results, next) {
             if (results.response) {
                 session.conversationData["enquire"] = results.response;
             }
@@ -36,7 +37,7 @@ exports.startDialog = function (bot) {
                 next();
             }
         },
-        function (session, results) {
+        function (session, results, next) {
             if (results.response) {
                 session.conversationData["dateTime"] = builder.EntityRecognizer.resolveTime([results.response]);
             }
@@ -50,27 +51,36 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["phoneNumber"] = results.response;
             }
-            session.send('Creating appointment... Please wait.');
-            appointment.createAppointment(session, session.conversationData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
-            session.conversationData = {};
+            session.send('Creating appointment... Please wait...');
+            appointment.createAppointment(session, session.userData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
         }
     ]).triggerAction({
         matches: 'bookAppointment'
     });
 
-    bot.dialog('currencyConverter', function (session, args) {
-        // Pulls out the currencyFrom entity from the session if it exists
-        var currencyFromEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyFrom');
-        // Pulls out the currencyTo entity from the session if it exists
-        var currencyToEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyTo');
+    bot.dialog('currencyConverter', [
+        function (session, args) {
+            session.dialogData.args = args || {};
+            // Pulls out the currencyFrom entity from the session if it exists
+            session.conversationData["currencyFrom"] = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyFrom').entity;
+            // Pulls out the currencyTo entity from the session if it exists
+            session.conversationData["currencyTo"] = builder.EntityRecognizer.findEntity(args.intent.entities, 'currencyTo').entity;
 
-        // Checks if the for entity was found
-        if (currencyFromEntity && currencyToEntity) {
-            session.send('convert %s to %s', currencyFromEntity.entity, currencyToEntity.entity);
-        } else {
-            session.send("No currency identified! Please try again");
+            // Checks if the for entity was found
+            if (session.conversationData["currencyFrom"] && session.conversationData["currencyTo"]) {
+                builder.Prompts.number(session, 'How much ' + session.conversationData["currencyFrom"].toUpperCase() + ' do you want to convert to ' + session.conversationData["currencyTo"].toUpperCase()) + '?';
+            } else {
+                session.endConversation("No currency identified! Please try again");
+            }
+        },
+        function (session, results) {
+            if (results.response) {
+                session.conversationData["amount"] = results.response;
+            }
+            session.send('Converting... Please wait...');
+            converter.displayCurrency(session, session.conversationData["currencyFrom"], session.conversationData["currencyTo"], session.conversationData["amount"]);
         }
-    }).triggerAction({
+    ]).triggerAction({
         matches: 'currencyConverter'
     });
 }

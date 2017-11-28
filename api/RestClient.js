@@ -26,3 +26,14 @@ exports.postAppointment = function sendData(url, session, username, enquiry, dat
         }
       });
 };
+
+exports.getRate = function getData(url, session, convertFrom, convertTo, amount, callback){
+    request.get(url, function handleGetRate(error,response, body){
+        if(error){
+            console.log(error);
+        }else {
+            console.log(body);
+            callback(body, session, convertFrom, convertTo, amount);
+        }
+    });
+};
