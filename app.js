@@ -1,6 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var luis = require('./controller/LuisDialog');
+var tts = require('./api/TTSService');  
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -18,14 +19,18 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("Hey! Connie here. How can I help you?");
+    session.send("Sorry, didn't get that. I'm still learning new things. Please try again.");
 });
 
 bot.on('conversationUpdate', function (message) {
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
-                bot.beginDialog(message.address, '/');
+                var reply = new builder.Message()
+                    .address(message.address)
+                    .text("Hey! Connie here. How can I help you?");
+                bot.send(reply);
+                tts.Synthesize("Hey! Connie here. How can I help you?");
             }
         });
     }
