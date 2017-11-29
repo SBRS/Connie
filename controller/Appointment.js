@@ -11,8 +11,17 @@ function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
 
-function handleCreateAppointmentResponse(message, session, username, appointmentId) {
-    session.endConversation("%s, your appointment has been booked %s", username, appointmentId);
+function handleCreateAppointmentResponse(message, session, username, enquiry, dateTime, appointmentId) {
+    session.send("%s, an appointment has been booked. Your appointment Id: %s", username, appointmentId);
+    var card = new builder.ThumbnailCard(session)
+    .title(enquiry.toUpperCase())
+    .subtitle('Date and Time: ' + dateTime)
+    .text('Appointment ID: ' + appointmentId)
+    .images([
+        builder.CardImage.create(session, 'http://www.pvhc.net/img58/myrhslyykacxjpfzxauv.png')]);
+    var msg = new builder.Message(session).addAttachment(card);
+    session.send(msg);
+    session.endConversation('Anything else I can do for you?');    
 }
 
 exports.retrieveAppointment = function getAppointment(session, username, phoneNumber) {
@@ -37,7 +46,7 @@ function displayAppointments(message, session, username, phoneNumber) {
                 .subtitle('Date and Time: ' + dateTimeReceived)
                 .text('Appointment ID: ' + idReceiver)
                 .images([
-                    builder.CardImage.create(session, 'http://www.pvhc.net/img58/myrhslyykacxjpfzxauv.png')])
+                    builder.CardImage.create(session, 'http://www.pvhc.net/img58/myrhslyykacxjpfzxauv.png')]);
             allAppointments.push(card);
         }
     }
@@ -67,5 +76,6 @@ exports.deleteAppointment = function deleteAppointment(session, username, phoneN
 };
 
 function handleDeleteAppointmentResponse(message, session, username, appointmentId) {
-    session.endConversation("%s, your appointment Id %s has been deleted", username, appointmentId);
+    session.send("%s, your appointment %s has been deleted.", username, appointmentId);
+    session.endConversation("Anything else I can do for you today?")
 }

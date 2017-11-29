@@ -19,7 +19,7 @@ exports.postAppointment = function sendData(url, session, username, enquiry, dat
       
       request(options, function handleSendData (error, response, body) {
         if (!error && response.statusCode === 201) {
-            callback(body, session, username, appointmentId);
+            callback(body, session, username, enquiry, dateTime, appointmentId);
         }
         else{
             console.log(error);
@@ -39,7 +39,7 @@ exports.getAppointment = function getData(url, session, username, phoneNumber, c
 
 exports.deleteAppointment = function deleteData(url,session, username ,phoneNumber, appointmentId, id, callback){
     var options = {
-        url: url + "\\" + id,
+        url: url + "/" + id,
         method: 'DELETE',
         headers: {
             'ZUMO-API-VERSION': '2.0.0',

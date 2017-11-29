@@ -11,15 +11,22 @@ exports.retreiveMessage = function (session, url){
         },
         body: { 'Url': url }
     }, function(error, response, body){
-        console.log(validResponse(body));
-        session.send(validResponse(body));
+        session.endConversation(validResponse(body));
     });
 }
 
 function validResponse(body){
     if (body && body.Predictions && body.Predictions[0].Tag){
-        return "This is " + body.Predictions[0].Tag;
+        if (body.Predictions[0].Tag == "House"){
+            return "It is a house. We can give you best home loan interest rates. Please book an appointment or call us. Anything else today?";
+        }
+        else if (body.Predictions[0].Tag == "Car"){
+            return "It is a car. Fast approval car finance from 9.95% p.a.*. Please book an appointment or call us. Anything else today?";
+        }
+        else if (body.Predictions[0].Tag == "TV"){
+            return "It is a TV. Whatever your needs, wants or goals we can help you achieve them with Our Personal Loan. Please book an appointment or call us. Anything else today?";
+        }        
     } else{
-        console.log('Oops, please try again!');
+        return "Oops, I couldn't identify your wish. Sorry... Please try another one...";
     }
 }

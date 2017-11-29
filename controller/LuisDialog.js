@@ -12,7 +12,7 @@ exports.startDialog = function (bot) {
     bot.dialog('bookAppointment', [
         function (session, args, next) {
             session.dialogData.args = args || {};
-            if (!session.userData["username"]) {
+            if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, 'Please, provide your name to book an appointment.');
             } else {
                 next(); // Skip if already has this info.
@@ -20,7 +20,7 @@ exports.startDialog = function (bot) {
         },
         function (session, results, next) {
             if (results.response) {
-                session.userData["username"] = results.response;
+                session.conversationData["username"] = results.response;
             }
             if (!session.conversationData["enquire"]) {
                 builder.Prompts.text(session, 'Please, provide purpose of your appointment (open account, open deposit, close deposit and etc.)');
@@ -52,8 +52,8 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["phoneNumber"] = results.response;
             }
-            session.send('Creating appointment... Please wait...');
-            appointment.createAppointment(session, session.userData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
+            session.send('Creating an appointment... Please wait...');
+            appointment.createAppointment(session, session.conversationData["username"], session.conversationData["enquire"], session.conversationData["dateTime"], session.conversationData["phoneNumber"]);
         }
     ]).triggerAction({
         matches: 'bookAppointment'
@@ -62,7 +62,7 @@ exports.startDialog = function (bot) {
     bot.dialog('retrieveAppointment', [
         function (session, args, next) {
             session.dialogData.args = args || {};
-            if (!session.userData["username"]) {
+            if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, 'Please, provide your name to look for your appointments.');
             } else {
                 next(); // Skip if already has this info.
@@ -70,7 +70,7 @@ exports.startDialog = function (bot) {
         },
         function (session, results, next) {
             if (results.response) {
-                session.userData["username"] = results.response;
+                session.conversationData["username"] = results.response;
             }
             if (!session.conversationData["phoneNumber"]) {
                 builder.Prompts.text(session, 'Please, provide your phone number to look for your appointments.');
@@ -83,7 +83,7 @@ exports.startDialog = function (bot) {
                 session.conversationData["phoneNumber"] = results.response;
             }
             session.send('Searching for your appointments... Please wait...');
-            appointment.retrieveAppointment(session, session.userData["username"], session.conversationData["phoneNumber"]);
+            appointment.retrieveAppointment(session, session.conversationData["username"], session.conversationData["phoneNumber"]);
         }
     ]).triggerAction({
         matches: 'retrieveAppointment'
@@ -92,7 +92,7 @@ exports.startDialog = function (bot) {
     bot.dialog('deleteAppointment', [
         function (session, args, next) {
             session.dialogData.args = args || {};
-            if (!session.userData["username"]) {
+            if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, 'Please, provide your name to delete your appointment.');
             } else {
                 next(); // Skip if already has this info.
@@ -100,7 +100,7 @@ exports.startDialog = function (bot) {
         },
         function (session, results, next) {
             if (results.response) {
-                session.userData["username"] = results.response;
+                session.conversationData["username"] = results.response;
             }
             if (!session.conversationData["phoneNumber"]) {
                 builder.Prompts.text(session, 'Please, provide your phone number.');
@@ -123,7 +123,7 @@ exports.startDialog = function (bot) {
                 session.conversationData["appointmentId"] = results.response;
             }
             session.send('Deleting your appointment... Please wait...');
-            appointment.deleteAppointment(session, session.userData["username"], session.conversationData["phoneNumber"], session.conversationData["appointmentId"]);
+            appointment.deleteAppointment(session, session.conversationData["username"], session.conversationData["phoneNumber"], session.conversationData["appointmentId"]);
         }
     ]).triggerAction({
         matches: 'deleteAppointment'
