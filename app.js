@@ -1,7 +1,6 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var luis = require('./controller/LuisDialog');
-var tts = require('./api/TTSService');  
+var luis = require('./controller/LuisDialog'); 
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -30,7 +29,6 @@ bot.on('conversationUpdate', function (message) {
                     .address(message.address)
                     .text("Hey! Connie here. How can I help you?");
                 bot.send(reply);
-                tts.Synthesize("Hey! Connie here. How can I help you?");
             }
         });
     }
