@@ -1,6 +1,7 @@
 var builder = require('botbuilder');
 var appointment = require('./Appointment');
 var converter = require('./CurrencyConverter');
+var cognitiveService = require('./CognitiveService');
 
 exports.startDialog = function (bot) {
 
@@ -152,5 +153,25 @@ exports.startDialog = function (bot) {
         }
     ]).triggerAction({
         matches: 'currencyConverter'
+    });
+
+    bot.dialog('makeAwish', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};
+            if (!session.conversationData["url"]) {
+                builder.Prompts.text(session, 'Please, provide url for a picture of your wish');
+            } else {
+                next();
+            }
+        },
+        function (session, results) {
+            if (results.response) {
+                session.conversationData["url"] = results.response;
+            }
+            session.send('Identifying your wish... Please wait...');
+            cognitiveService.retreiveMessage(session, session.conversationData["url"]);
+        }
+    ]).triggerAction({
+        matches: 'makeAwish'
     });
 }
