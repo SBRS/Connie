@@ -25,10 +25,15 @@ bot.on('conversationUpdate', function (message) {
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {
             if (identity.id === message.address.bot.id) {
-                var reply = new builder.Message()
-                    .address(message.address)
-                    .text("Hey! Connie here. How can I help you?");
-                bot.send(reply);
+                var card = new builder.HeroCard()
+                .title('Hey! Connie here. How can I help you?')
+                .images([
+                    builder.CardImage.create(message, 'https://image.ibb.co/ePqasw/Connie.png')]);
+                var msg = new builder.Message().address(message.address).addAttachment(card);
+                // var reply = new builder.Message()
+                //     .address(message.address)
+                //     .text("Hey! Connie here. How can I help you?");
+                bot.send(msg);
             }
         });
     }
